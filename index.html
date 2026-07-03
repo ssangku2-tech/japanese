@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2B4C6F">
+<title>하루 일본어 — 기초 단어장</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F4F4EF;
+  --card:#FFFFFF;
+  --ink:#22303F;
+  --sub:#6B7684;
+  --indigo:#2B4C6F;
+  --indigo-soft:#E4EBF2;
+  --vermilion:#C4402B;
+  --vermilion-soft:#F7E4DF;
+  --moss:#4E7A57;
+  --moss-soft:#E2EEE4;
+  --line:#DFDDD4;
+  --chip:#EEF1F4;
+  --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:'Noto Sans KR',sans-serif;
+  background:var(--paper);
+  color:var(--ink);
+  max-width:520px;margin:0 auto;
+  padding:env(safe-area-inset-top) 0 calc(70px + env(safe-area-inset-bottom));
+  -webkit-user-select:none;user-select:none;
+}
+.jp{font-family:'Zen Maru Gothic','Noto Sans KR',sans-serif}
+
+/* ---------- header ---------- */
+header{padding:20px 20px 8px;display:flex;align-items:baseline;justify-content:space-between}
+header h1{font-family:'Zen Maru Gothic';font-weight:900;font-size:22px;letter-spacing:.5px}
+header h1 span{color:var(--vermilion)}
+.streak{
+  font-size:13px;font-weight:700;color:var(--vermilion);
+  border:2px solid var(--vermilion);border-radius:8px;padding:3px 9px;
+  transform:rotate(-3deg);background:#fff;
+}
+
+/* ---------- screens ---------- */
+.screen{display:none;padding:8px 20px 20px}
+.screen.on{display:block}
+
+/* ---------- home ---------- */
+.today{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:18px;margin-bottom:14px;
+}
+.today .date{font-size:12px;color:var(--sub);margin-bottom:10px;letter-spacing:.5px}
+.bigbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bigbtn{
+  border:none;border-radius:var(--r);padding:18px 14px;text-align:left;
+  font-family:inherit;cursor:pointer;position:relative;
+}
+.bigbtn .n{font-size:26px;font-weight:900;font-family:'Zen Maru Gothic'}
+.bigbtn .t{font-size:13px;font-weight:500;margin-top:2px}
+.bigbtn.new{background:var(--indigo);color:#fff}
+.bigbtn.rev{background:var(--vermilion);color:#fff}
+.bigbtn:disabled{background:var(--chip);color:var(--sub)}
+.rowbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.rowbtn{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:14px;font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;
+}
+.progressline{margin-top:14px;font-size:12px;color:var(--sub)}
+.bar{height:8px;background:var(--chip);border-radius:4px;margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--moss);border-radius:4px;transition:width .4s}
+
+/* ---------- card ---------- */
+.cardwrap{margin-top:6px}
+.sessioninfo{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);margin-bottom:10px}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:18px;
+  min-height:330px;padding:26px 20px;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;text-align:center;
+  box-shadow:0 2px 10px rgba(34,48,63,.05);
+}
+.card .cat{font-size:12px;color:var(--sub);margin-bottom:14px;letter-spacing:1px}
+.kanji{font-family:'Zen Maru Gothic';font-weight:700;font-size:44px;line-height:1.2;margin-bottom:14px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{
+  position:relative;background:var(--chip);border-radius:12px;
+  padding:10px 12px;font-family:'Zen Maru Gothic';font-weight:700;font-size:30px;
+  cursor:pointer;border:1px solid transparent;
+}
+.chip.small-word .chip{font-size:24px}
+.chip .roma{
+  position:absolute;left:50%;top:-26px;transform:translateX(-50%);
+  background:var(--ink);color:#fff;font-family:'Noto Sans KR';font-size:12px;font-weight:700;
+  padding:2px 8px;border-radius:6px;white-space:nowrap;opacity:0;pointer-events:none;
+  transition:opacity .15s;
+}
+.chip.show{background:var(--indigo-soft);border-color:var(--indigo)}
+.chip.show .roma{opacity:1}
+.hint{font-size:12px;color:var(--sub);margin-top:16px}
+.answer{display:none;margin-top:18px;padding-top:18px;border-top:1px dashed var(--line);width:100%}
+.card.open .answer{display:block}
+.card.open .hint{display:none}
+.meaning{font-size:26px;font-weight:700}
+.romaji{font-size:15px;color:var(--sub);margin-top:6px}
+.ttsbtn{
+  margin-top:12px;background:var(--indigo-soft);border:none;border-radius:20px;
+  padding:8px 18px;font-family:inherit;font-size:14px;font-weight:700;color:var(--indigo);cursor:pointer;
+}
+.judge{display:none;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.judge.on{display:grid}
+.judge button{
+  border:none;border-radius:var(--r);padding:16px;font-family:inherit;
+  font-size:16px;font-weight:700;cursor:pointer;
+}
+.judge .no{background:var(--vermilion-soft);color:var(--vermilion)}
+.judge .yes{background:var(--moss-soft);color:var(--moss)}
+.flipbtn{
+  display:block;width:100%;margin-top:14px;border:none;border-radius:var(--r);
+  padding:16px;background:var(--indigo);color:#fff;font-family:inherit;
+  font-size:16px;font-weight:700;cursor:pointer;
+}
+.donebox{text-align:center;padding:50px 0}
+.stamp{
+  display:inline-block;font-family:'Zen Maru Gothic';font-weight:900;font-size:26px;
+  color:var(--vermilion);border:3px solid var(--vermilion);border-radius:10px;
+  padding:10px 22px;transform:rotate(-6deg);margin-bottom:18px;background:#fff;
+}
+
+/* ---------- quiz ---------- */
+.qword{font-family:'Zen Maru Gothic';font-weight:700;font-size:40px;text-align:center;margin:26px 0}
+.qopts{display:grid;gap:10px}
+.qopt{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px;font-family:inherit;font-size:16px;font-weight:500;cursor:pointer;text-align:left;
+}
+.qopt.ok{background:var(--moss-soft);border-color:var(--moss);color:var(--moss);font-weight:700}
+.qopt.ng{background:var(--vermilion-soft);border-color:var(--vermilion);color:var(--vermilion)}
+
+/* ---------- list ---------- */
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;-webkit-overflow-scrolling:touch}
+.filters::-webkit-scrollbar{display:none}
+.fbtn{
+  flex:none;background:var(--card);border:1px solid var(--line);border-radius:18px;
+  padding:7px 14px;font-family:inherit;font-size:13px;font-weight:500;color:var(--sub);cursor:pointer;
+}
+.fbtn.on{background:var(--ink);border-color:var(--ink);color:#fff}
+.wlist{display:grid;gap:8px;margin-top:4px}
+.witem{
+  background:var(--card);border:1px solid var(--line);border-radius:12px;
+  padding:12px 14px;display:flex;align-items:center;gap:12px;
+}
+.witem .w{font-family:'Zen Maru Gothic';font-weight:700;font-size:20px;flex:1}
+.witem .w small{display:block;font-size:12px;color:var(--sub);font-weight:500}
+.witem .m{font-size:14px;color:var(--sub);text-align:right}
+.witem .box{
+  flex:none;width:8px;height:8px;border-radius:50%;
+}
+.b0{background:var(--line)}.b1{background:#D9A44A}.b2{background:#C9803A}.b3{background:#7FA0C4}.b4{background:var(--indigo)}.b5{background:var(--moss)}
+
+/* ---------- stats ---------- */
+.statgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.stat .v{font-size:26px;font-weight:900;font-family:'Zen Maru Gothic'}
+.stat .l{font-size:12px;color:var(--sub);margin-top:2px}
+.boxbar{display:flex;height:14px;border-radius:7px;overflow:hidden;margin-top:8px}
+.boxbar i{display:block;height:100%}
+.legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;font-size:11px;color:var(--sub)}
+.legend b{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:3px}
+.tapchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.tapchip{
+  background:var(--chip);border-radius:10px;padding:8px 12px;
+  font-family:'Zen Maru Gothic';font-weight:700;font-size:20px;
+}
+.tapchip small{font-family:'Noto Sans KR';font-size:11px;color:var(--sub);margin-left:4px;font-weight:500}
+.sec{font-size:13px;font-weight:700;color:var(--sub);margin:18px 0 8px;letter-spacing:.5px}
+
+/* ---------- nav ---------- */
+nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:520px;background:var(--card);border-top:1px solid var(--line);
+  display:grid;grid-template-columns:repeat(4,1fr);
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom));z-index:10;
+}
+nav button{
+  background:none;border:none;font-family:inherit;font-size:11px;font-weight:500;
+  color:var(--sub);cursor:pointer;padding:6px 0;
+}
+nav button .ic{display:block;font-size:20px;margin-bottom:2px}
+nav button.on{color:var(--indigo);font-weight:700}
+.sync{font-size:11px;color:var(--sub);text-align:center;margin-top:16px}
+.sync b{color:var(--moss)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>하루<span>、</span>일본어</h1>
+  <div class="streak" id="streakBadge">🔥 0일</div>
+</header>
+
+<!-- ===== 홈 ===== -->
+<div class="screen on" id="scr-home">
+  <div class="today">
+    <div class="date" id="todayDate"></div>
+    <div class="bigbtns">
+      <button class="bigbtn new" id="btnNew">
+        <span class="n" id="newCount">10</span>
+        <span class="t">새 단어 배우기</span>
+      </button>
+      <button class="bigbtn rev" id="btnRev">
+        <span class="n" id="revCount">0</span>
+        <span class="t">오늘의 복습</span>
+      </button>
+    </div>
+    <div class="rowbtns">
+      <button class="rowbtn" id="btnQuiz">🎯 뜻 맞히기 퀴즈</button>
+      <button class="rowbtn" id="btnShuffle">🔀 배운 단어 훑어보기</button>
+    </div>
+    <div class="progressline">
+      전체 진도 <span id="progText">0 / 0</span>
+      <div class="bar"><i id="progBar" style="width:0%"></i></div>
+    </div>
+  </div>
+  <div class="sync" id="syncState">로컬 저장 모드</div>
+</div>
+
+<!-- ===== 학습 카드 ===== -->
+<div class="screen" id="scr-study">
+  <div class="cardwrap">
+    <div class="sessioninfo">
+      <span id="sessTitle">새 단어</span>
+      <span id="sessProg">1 / 10</span>
+    </div>
+    <div class="card" id="card">
+      <div class="cat" id="cCat"></div>
+      <div class="kanji jp" id="cKanji"></div>
+      <div class="chips" id="cChips"></div>
+      <div class="hint">모르는 글자를 눌러보세요 · 카드를 뒤집으면 뜻이 나옵니다</div>
+      <div class="answer">
+        <div class="meaning" id="cMeaning"></div>
+        <div class="romaji" id="cRomaji"></div>
+        <button class="ttsbtn" id="cTts">🔊 발음 듣기</button>
+      </div>
+    </div>
+    <button class="flipbtn" id="btnFlip">뜻 확인하기</button>
+    <div class="judge" id="judge">
+      <button class="no" id="btnNo">✕ 아직이에요</button>
+      <button class="yes" id="btnYes">◯ 외웠어요</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 세션 완료 ===== -->
+<div class="screen" id="scr-done">
+  <div class="donebox">
+    <div class="stamp jp">よくできました</div>
+    <p id="doneMsg" style="color:var(--sub);font-size:14px;margin-bottom:24px"></p>
+    <button class="flipbtn" id="btnDoneHome" style="max-width:240px;margin:0 auto">홈으로</button>
+  </div>
+</div>
+
+<!-- ===== 퀴즈 ===== -->
+<div class="screen" id="scr-quiz">
+  <div class="sessioninfo">
+    <span>뜻 맞히기</span>
+    <span id="quizProg">1 / 10</span>
+  </div>
+  <div class="qword jp" id="qWord"></div>
+  <div class="qopts" id="qOpts"></div>
+</div>
+
+<!-- ===== 단어장 ===== -->
+<div class="screen" id="scr-list">
+  <div class="filters" id="filters"></div>
+  <div class="wlist" id="wlist"></div>
+</div>
+
+<!-- ===== 통계 ===== -->
+<div class="screen" id="scr-stats">
+  <div class="statgrid">
+    <div class="stat"><div class="v" id="stStreak">0일</div><div class="l">연속 학습</div></div>
+    <div class="stat"><div class="v" id="stLearned">0</div><div class="l">배운 단어</div></div>
+    <div class="stat"><div class="v" id="stDone">0</div><div class="l">암기 완료</div></div>
+    <div class="stat"><div class="v" id="stToday">0</div><div class="l">오늘 학습</div></div>
+  </div>
+  <div class="stat">
+    <div class="l">기억 단계 분포</div>
+    <div class="boxbar" id="boxBar"></div>
+    <div class="legend">
+      <span><b class="b1"></b>1단계</span><span><b class="b2"></b>2단계</span>
+      <span><b class="b3"></b>3단계</span><span><b class="b4"></b>4단계</span>
+      <span><b class="b5"></b>완료</span>
+    </div>
+  </div>
+  <div class="sec">자주 확인한 글자</div>
+  <div class="stat">
+    <div class="tapchips" id="tapChips"><span style="font-size:13px;color:var(--sub)">아직 기록이 없습니다</span></div>
+  </div>
+</div>
+
+<nav>
+  <button data-scr="home" class="on"><span class="ic">🏠</span>홈</button>
+  <button data-scr="list"><span class="ic">📖</span>단어장</button>
+  <button data-scr="stats"><span class="ic">📊</span>통계</button>
+  <button id="navTts"><span class="ic">🔊</span>테스트</button>
+</nav>
+
+<script src="words.js"></script>
+<script src="firebase-config.js" onerror="void 0"></script>
+<script>
+/* =========================================================
+   하루、일본어 — 기초 단어 SRS
+   - Leitner 5단계: 정답 → 다음 단계, 오답 → 1단계
+   - 간격: [즉시, 1일, 3일, 7일, 21일] / 5단계 통과 = 완료
+   ========================================================= */
+const INTERVALS=[0,1,3,7,21];
+const NEW_PER_DAY=10;
+const KATA_RATIO=4; // 새 단어 10개 중 가타카나 4개
+
+/* ---------- 저장소 ---------- */
+const store={
+  get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},
+  set(k,v){localStorage.setItem(k,JSON.stringify(v))}
+};
+let prog=store.get('jpv_progress',{});     // {id:{b:box,n:'YYYY-MM-DD',u:ts}}
+let taps=store.get('jpv_taps',{});          // {글자:횟수}
+let log=store.get('jpv_log',{});            // {날짜:학습수}
+function saveAll(){store.set('jpv_progress',prog);store.set('jpv_taps',taps);store.set('jpv_log',log);fbPush();}
+
+const todayStr=()=>new Date().toISOString().slice(0,10);
+function addDays(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
+
+/* ---------- 가나 → 로마자 ---------- */
+const BASE={'あ':'a','い':'i','う':'u','え':'e','お':'o','か':'ka','き':'ki','く':'ku','け':'ke','こ':'ko','さ':'sa','し':'shi','す':'su','せ':'se','そ':'so','た':'ta','ち':'chi','つ':'tsu','て':'te','と':'to','な':'na','に':'ni','ぬ':'nu','ね':'ne','の':'no','は':'ha','ひ':'hi','ふ':'fu','へ':'he','ほ':'ho','ま':'ma','み':'mi','む':'mu','め':'me','も':'mo','や':'ya','ゆ':'yu','よ':'yo','ら':'ra','り':'ri','る':'ru','れ':'re','ろ':'ro','わ':'wa','を':'o','ん':'n','が':'ga','ぎ':'gi','ぐ':'gu','げ':'ge','ご':'go','ざ':'za','じ':'ji','ず':'zu','ぜ':'ze','ぞ':'zo','だ':'da','ぢ':'ji','づ':'zu','で':'de','ど':'do','ば':'ba','び':'bi','ぶ':'bu','べ':'be','ぼ':'bo','ぱ':'pa','ぴ':'pi','ぷ':'pu','ぺ':'pe','ぽ':'po','ゔ':'vu'};
+const COMBO={'きゃ':'kya','きゅ':'kyu','きょ':'kyo','しゃ':'sha','しゅ':'shu','しょ':'sho','ちゃ':'cha','ちゅ':'chu','ちょ':'cho','にゃ':'nya','にゅ':'nyu','にょ':'nyo','ひゃ':'hya','ひゅ':'hyu','ひょ':'hyo','みゃ':'mya','みゅ':'myu','みょ':'myo','りゃ':'rya','りゅ':'ryu','りょ':'ryo','ぎゃ':'gya','ぎゅ':'gyu','ぎょ':'gyo','じゃ':'ja','じゅ':'ju','じょ':'jo','びゃ':'bya','びゅ':'byu','びょ':'byo','ぴゃ':'pya','ぴゅ':'pyu','ぴょ':'pyo','ふぁ':'fa','ふぃ':'fi','ふぇ':'fe','ふぉ':'fo','てぃ':'ti','でぃ':'di','うぃ':'wi','うぇ':'we','うぉ':'wo','しぇ':'she','ちぇ':'che','じぇ':'je','つぁ':'tsa','つぇ':'tse','つぉ':'tso','とぅ':'tu','どぅ':'du','ゔぁ':'va','ゔぃ':'vi','ゔぇ':'ve','ゔぉ':'vo','いぇ':'ye'};
+const SMALL='ゃゅょぁぃぅぇぉャュョァィゥェォ';
+const toHira=s=>s.replace(/[\u30A1-\u30F6]/g,c=>String.fromCharCode(c.charCodeAt(0)-0x60));
+
+/* 단어를 탭 가능한 글자 단위로 분해 */
+function segment(word){
+  const units=[];const chars=[...word];
+  for(let i=0;i<chars.length;i++){
+    let u=chars[i];
+    if(i+1<chars.length&&SMALL.includes(chars[i+1])){u+=chars[i+1];i++;}
+    units.push(u);
+  }
+  return units.map((u,idx)=>{
+    const h=toHira(u);
+    let r;
+    if(u==='ー'){ // 장음: 앞 글자 모음 반복
+      const prev=units[idx-1]?romaOf(toHira(units[idx-1])):'';
+      r=(prev.slice(-1)||'-')+' (장음)';
+    }else if(h==='っ'){ // 촉음: 뒤 자음 겹침
+      const next=units[idx+1]?romaOf(toHira(units[idx+1])):'';
+      r=(next[0]||'')+' (촉음)';
+    }else r=romaOf(h)||u;
+    return{ch:u,r};
+  });
+}
+function romaOf(h){return COMBO[h]||BASE[h]||''}
+function wordRomaji(kana){
+  const units=segment(kana);let out='';
+  for(let i=0;i<units.length;i++){
+    const h=toHira(units[i].ch);
+    if(units[i].ch==='ー'){out+=out.slice(-1);continue}
+    if(h==='っ'){const nx=units[i+1]?romaOf(toHira(units[i+1].ch)):'';out+=nx[0]||'';continue}
+    if(h==='ん'){out+='n';continue}
+    out+=romaOf(h)||units[i].ch;
+  }
+  return out;
+}
+
+/* ---------- 큐 계산 ---------- */
+function dueIds(){
+  const t=todayStr();
+  return Object.keys(prog).filter(id=>prog[id].b>=1&&prog[id].b<=4&&prog[id].n<=t).map(Number);
+}
+function newIds(limit){
+  const learned=new Set(Object.keys(prog).map(Number));
+  const kata=[],basic=[];
+  WORDS.forEach((w,i)=>{if(!learned.has(i)){(w.k?kata:basic).push(i)}});
+  const out=[];
+  let ki=0,bi=0;
+  while(out.length<limit&&(ki<kata.length||bi<basic.length)){
+    // 10개 기준 기본 6 : 가타카나 4 비율로 섞기
+    const wantKata=(out.length%10)>=(10-KATA_RATIO);
+    if(wantKata&&ki<kata.length)out.push(kata[ki++]);
+    else if(bi<basic.length)out.push(basic[bi++]);
+    else if(ki<kata.length)out.push(kata[ki++]);
+  }
+  return out;
+}
+
+/* ---------- 화면 전환 ---------- */
+const scrs=['home','study','done','quiz','list','stats'];
+function show(name){
+  scrs.forEach(s=>document.getElementById('scr-'+s).classList.toggle('on',s===name));
+  document.querySelectorAll('nav button[data-scr]').forEach(b=>b.classList.toggle('on',b.dataset.scr===name));
+  if(name==='home')renderHome();
+  if(name==='list')renderList();
+  if(name==='stats')renderStats();
+}
+document.querySelectorAll('nav button[data-scr]').forEach(b=>b.onclick=()=>show(b.dataset.scr));
+
+/* ---------- 홈 ---------- */
+function streak(){
+  let s=0;const d=new Date();
+  if(!log[todayStr()]){d.setDate(d.getDate()-1)} // 오늘 안 했으면 어제부터 계산
+  while(true){
+    const k=d.toISOString().slice(0,10);
+    if(log[k]&&log[k]>0){s++;d.setDate(d.getDate()-1)}else break;
+  }
+  return s;
+}
+function renderHome(){
+  const days=['일','월','화','수','목','금','토'];const d=new Date();
+  document.getElementById('todayDate').textContent=`${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+  const due=dueIds().length;
+  const fresh=newIds(NEW_PER_DAY).length;
+  document.getElementById('newCount').textContent=fresh;
+  document.getElementById('revCount').textContent=due;
+  document.getElementById('btnNew').disabled=fresh===0;
+  document.getElementById('btnRev').disabled=due===0;
+  const learned=Object.keys(prog).length;
+  document.getElementById('progText').textContent=`${learned} / ${WORDS.length}`;
+  document.getElementById('progBar').style.width=(learned/WORDS.length*100)+'%';
+  document.getElementById('streakBadge').textContent='🔥 '+streak()+'일';
+}
+
+/* ---------- 학습 세션 ---------- */
+let queue=[],qi=0,mode='new',total=0,wrongSet=new Set();
+function startSession(ids,m){
+  if(!ids.length)return;
+  queue=[...ids];qi=0;mode=m;total=ids.length;wrongSet=new Set();
+  document.getElementById('sessTitle').textContent=m==='new'?'새 단어':m==='rev'?'오늘의 복습':'훑어보기';
+  show('study');renderCard();
+}
+document.getElementById('btnNew').onclick=()=>startSession(newIds(NEW_PER_DAY),'new');
+document.getElementById('btnRev').onclick=()=>startSession(dueIds(),'rev');
+document.getElementById('btnShuffle').onclick=()=>{
+  const learned=Object.keys(prog).map(Number);
+  if(!learned.length){alert('아직 배운 단어가 없습니다. 새 단어부터 시작해보세요!');return}
+  startSession(learned.sort(()=>Math.random()-.5).slice(0,15),'browse');
+};
+
+function renderCard(){
+  const id=queue[qi];const w=WORDS[id];
+  const card=document.getElementById('card');
+  card.classList.remove('open');
+  document.getElementById('judge').classList.remove('on');
+  document.getElementById('btnFlip').style.display='block';
+  document.getElementById('sessProg').textContent=`${Math.min(qi+1,total)} / ${total}`;
+  document.getElementById('cCat').textContent=(w.k?'가타카나 · ':'')+w.c;
+  const kanjiEl=document.getElementById('cKanji');
+  const reading=w.r||w.w;
+  kanjiEl.textContent=w.r?w.w:'';
+  kanjiEl.style.display=w.r?'block':'none';
+  const chips=document.getElementById('cChips');
+  chips.innerHTML='';
+  segment(reading).forEach(u=>{
+    const c=document.createElement('div');c.className='chip jp';
+    c.innerHTML=`${u.ch}<span class="roma">${u.r}</span>`;
+    c.onclick=e=>{
+      e.stopPropagation();
+      const was=c.classList.contains('show');
+      chips.querySelectorAll('.chip').forEach(x=>x.classList.remove('show'));
+      if(!was){c.classList.add('show');taps[u.ch]=(taps[u.ch]||0)+1;store.set('jpv_taps',taps);}
+    };
+    chips.appendChild(c);
+  });
+  if([...reading].length>5)chips.querySelectorAll('.chip').forEach(c=>c.style.fontSize='24px');
+  document.getElementById('cMeaning').textContent=w.m;
+  document.getElementById('cRomaji').textContent=wordRomaji(reading);
+}
+function flip(){
+  document.getElementById('card').classList.add('open');
+  document.getElementById('btnFlip').style.display='none';
+  document.getElementById('judge').classList.add('on');
+  speak(WORDS[queue[qi]]);
+}
+document.getElementById('btnFlip').onclick=flip;
+document.getElementById('card').onclick=e=>{
+  if(!document.getElementById('card').classList.contains('open')&&!e.target.closest('.chip'))flip();
+};
+document.getElementById('cTts').onclick=e=>{e.stopPropagation();speak(WORDS[queue[qi]])};
+
+function answer(ok){
+  const id=queue[qi];
+  if(mode!=='browse'){
+    const p=prog[id]||{b:0,n:todayStr()};
+    if(ok){
+      if(wrongSet.has(id)){p.b=1;p.n=addDays(1);} // 이번 세션에서 틀렸던 카드: 1단계 유지
+      else{p.b=Math.min(p.b+1,5);p.n=p.b<=4?addDays(INTERVALS[p.b]):'9999-12-31';}
+    }else{
+      p.b=1;p.n=addDays(1);
+      wrongSet.add(id);
+      queue.push(id); // 못 외운 카드는 세션 끝에 다시
+    }
+    p.u=Date.now();prog[id]=p;
+    log[todayStr()]=(log[todayStr()]||0)+1;
+    saveAll();
+  }
+  qi++;
+  if(qi>=queue.length)finishSession();
+  else{total=queue.length;renderCard();}
+}
+document.getElementById('btnYes').onclick=()=>answer(true);
+document.getElementById('btnNo').onclick=()=>answer(false);
+
+function finishSession(){
+  const msgs={new:'새 단어를 모두 만났습니다. 내일 복습에서 다시 만나요.',rev:'오늘 복습 완료! 기억이 한 단계 단단해졌습니다.',browse:'훑어보기 끝!'};
+  document.getElementById('doneMsg').textContent=msgs[mode];
+  show('done');
+}
+document.getElementById('btnDoneHome').onclick=()=>show('home');
+
+/* ---------- TTS ---------- */
+let jpVoice=null;
+function pickVoice(){
+  const vs=speechSynthesis.getVoices();
+  jpVoice=vs.find(v=>v.lang==='ja-JP')||vs.find(v=>v.lang.startsWith('ja'))||null;
+}
+if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
+function speak(w){
+  if(!('speechSynthesis'in window))return;
+  speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(w.r?w.w:w.w);
+  u.lang='ja-JP';if(jpVoice)u.voice=jpVoice;u.rate=.85;
+  speechSynthesis.speak(u);
+}
+document.getElementById('navTts').onclick=()=>speak({w:'こんにちは'});
+
+/* ---------- 퀴즈 ---------- */
+let quiz=[],quizI=0;
+document.getElementById('btnQuiz').onclick=()=>{
+  const pool=Object.keys(prog).map(Number);
+  if(pool.length<4){alert('퀴즈는 단어를 4개 이상 배운 뒤에 열립니다.');return}
+  quiz=pool.sort(()=>Math.random()-.5).slice(0,10);quizI=0;
+  show('quiz');renderQuiz();
+};
+function renderQuiz(){
+  const id=quiz[quizI];const w=WORDS[id];
+  document.getElementById('quizProg').textContent=`${quizI+1} / ${quiz.length}`;
+  document.getElementById('qWord').textContent=w.r?w.w:w.w;
+  const wrongs=WORDS.map((x,i)=>i).filter(i=>i!==id).sort(()=>Math.random()-.5).slice(0,3);
+  const opts=[id,...wrongs].sort(()=>Math.random()-.5);
+  const box=document.getElementById('qOpts');box.innerHTML='';
+  opts.forEach(oid=>{
+    const b=document.createElement('button');b.className='qopt';b.textContent=WORDS[oid].m;
+    b.onclick=()=>{
+      if(b.dataset.done)return;
+      box.querySelectorAll('.qopt').forEach(x=>x.dataset.done=1);
+      if(oid===id){b.classList.add('ok')}
+      else{b.classList.add('ng');[...box.children].find(x=>x.textContent===WORDS[id].m).classList.add('ok')}
+      speak(w);
+      setTimeout(()=>{quizI++;quizI<quiz.length?renderQuiz():(document.getElementById('doneMsg').textContent='퀴즈 완료!',show('done'))},1100);
+    };
+    box.appendChild(b);
+  });
+}
+
+/* ---------- 단어장 ---------- */
+let filter='전체';
+function renderList(){
+  const cats=['전체','미학습','학습중','완료',...new Set(WORDS.map(w=>w.c))];
+  const f=document.getElementById('filters');f.innerHTML='';
+  cats.forEach(c=>{
+    const b=document.createElement('button');b.className='fbtn'+(filter===c?' on':'');b.textContent=c;
+    b.onclick=()=>{filter=c;renderList()};f.appendChild(b);
+  });
+  const list=document.getElementById('wlist');list.innerHTML='';
+  WORDS.forEach((w,i)=>{
+    const p=prog[i];const box=p?p.b:0;
+    if(filter==='미학습'&&p)return;
+    if(filter==='학습중'&&(!p||box>=5))return;
+    if(filter==='완료'&&(!p||box<5))return;
+    if(!['전체','미학습','학습중','완료'].includes(filter)&&w.c!==filter)return;
+    const el=document.createElement('div');el.className='witem';
+    el.innerHTML=`<span class="box b${box}"></span>
+      <div class="w jp">${w.w}${w.r?`<small>${w.r}</small>`:''}</div>
+      <div class="m">${w.m}</div>`;
+    el.onclick=()=>speak(w);
+    list.appendChild(el);
+  });
+}
+
+/* ---------- 통계 ---------- */
+function renderStats(){
+  document.getElementById('stStreak').textContent=streak()+'일';
+  const entries=Object.values(prog);
+  document.getElementById('stLearned').textContent=entries.length;
+  document.getElementById('stDone').textContent=entries.filter(p=>p.b>=5).length;
+  document.getElementById('stToday').textContent=log[todayStr()]||0;
+  const counts=[0,0,0,0,0];
+  entries.forEach(p=>{if(p.b>=1)counts[Math.min(p.b,5)-1]++});
+  const totalC=counts.reduce((a,b)=>a+b,0)||1;
+  const cls=['b1','b2','b3','b4','b5'];
+  document.getElementById('boxBar').innerHTML=counts.map((c,i)=>`<i class="${cls[i]}" style="width:${c/totalC*100}%"></i>`).join('');
+  const top=Object.entries(taps).sort((a,b)=>b[1]-a[1]).slice(0,12);
+  const tc=document.getElementById('tapChips');
+  if(top.length){tc.innerHTML=top.map(([ch,n])=>`<span class="tapchip">${ch}<small>${n}회</small></span>`).join('')}
+}
+
+/* ---------- Firebase 동기화 (firebase-config.js 있을 때만) ---------- */
+let db=null;
+function fbInit(){
+  if(typeof window.firebaseConfig==='undefined')return;
+  const s1=document.createElement('script');s1.src='https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
+  const s2=document.createElement('script');s2.src='https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js';
+  s1.onload=()=>document.head.appendChild(s2);
+  s2.onload=()=>{
+    firebase.initializeApp(window.firebaseConfig);
+    db=firebase.database();
+    document.getElementById('syncState').innerHTML='<b>●</b> Firebase 동기화 중';
+    db.ref('nihongo/progress').once('value').then(snap=>{
+      const remote=snap.val();
+      if(remote&&remote.prog){
+        // 단어별로 더 최근 기록을 채택
+        Object.keys(remote.prog).forEach(id=>{
+          if(!prog[id]||(remote.prog[id].u||0)>(prog[id].u||0))prog[id]=remote.prog[id];
+        });
+        Object.keys(remote.log||{}).forEach(d=>{log[d]=Math.max(log[d]||0,remote.log[d])});
+        Object.keys(remote.taps||{}).forEach(c=>{taps[c]=Math.max(taps[c]||0,remote.taps[c])});
+        store.set('jpv_progress',prog);store.set('jpv_log',log);store.set('jpv_taps',taps);
+        renderHome();
+      }
+    });
+  };
+  document.head.appendChild(s1);
+}
+let pushTimer=null;
+function fbPush(){
+  if(!db)return;
+  clearTimeout(pushTimer);
+  pushTimer=setTimeout(()=>db.ref('nihongo/progress').set({prog,log,taps,updatedAt:Date.now()}),1200);
+}
+
+/* ---------- 시작 ---------- */
+renderHome();
+fbInit();
+</script>
+</body>
+</html>
