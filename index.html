@@ -83,6 +83,38 @@ header h1 span{color:var(--vermilion)}
 .bar{height:8px;background:var(--chip);border-radius:4px;margin-top:6px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--moss);border-radius:4px;transition:width .4s}
 
+/* ---------- history ---------- */
+.history{
+  background:var(--card);border:1px solid var(--line);border-radius:var(--r);
+  margin-bottom:14px;overflow:hidden;
+}
+.history-toggle{
+  width:100%;background:none;border:none;font-family:inherit;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;font-size:13px;font-weight:700;color:var(--ink);
+}
+.history-toggle .chev{color:var(--sub);transition:transform .2s;font-size:11px}
+.history.open .history-toggle .chev{transform:rotate(180deg)}
+.history-body{display:none;padding:0 14px 12px}
+.history.open .history-body{display:block}
+.hitem{border-top:1px solid var(--line)}
+.hitem:first-child{border-top:none}
+.hitem-head{
+  width:100%;background:none;border:none;font-family:inherit;cursor:pointer;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 4px;font-size:13px;color:var(--ink);
+}
+.hitem-head .d{font-weight:700}
+.hitem-head .n{color:var(--sub)}
+.hitem-head:disabled{color:var(--sub);cursor:default}
+.hitem-words{display:none;flex-wrap:wrap;gap:6px;padding:0 4px 10px}
+.hitem.open .hitem-words{display:flex}
+.hword{
+  background:var(--chip);border-radius:8px;padding:5px 9px;font-size:12px;
+}
+.hword .jp{font-weight:700;margin-right:4px}
+.hword .m{color:var(--sub)}
+
 /* ---------- card ---------- */
 .cardwrap{margin-top:6px}
 .sessioninfo{display:flex;justify-content:space-between;font-size:12px;color:var(--sub);margin-bottom:10px}
@@ -214,6 +246,10 @@ nav button.on{color:var(--indigo);font-weight:700}
 
 <!-- ===== 홈 ===== -->
 <div class="screen on" id="scr-home">
+  <div class="history" id="historySec">
+    <button class="history-toggle" id="historyToggle">📅 지난 학습 기록 <span class="chev">▾</span></button>
+    <div class="history-body" id="historyBody"></div>
+  </div>
   <div class="today">
     <div class="date" id="todayDate"></div>
     <div class="bigbtns">
@@ -339,7 +375,8 @@ const store={
 let prog=store.get('jpv_progress',{});     // {id:{b:box,n:'YYYY-MM-DD',u:ts}}
 let taps=store.get('jpv_taps',{});          // {글자:횟수}
 let log=store.get('jpv_log',{});            // {날짜:학습수}
-function saveAll(){store.set('jpv_progress',prog);store.set('jpv_taps',taps);store.set('jpv_log',log);fbPush();}
+let logWords=store.get('jpv_log_words',{}); // {날짜:[id,...]} 그날 학습한 단어(신규+복습)
+function saveAll(){store.set('jpv_progress',prog);store.set('jpv_taps',taps);store.set('jpv_log',log);store.set('jpv_log_words',logWords);fbPush();}
 
 const todayStr=()=>new Date().toISOString().slice(0,10);
 function addDays(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
@@ -386,8 +423,8 @@ function wordRomaji(kana){
 
 /* ---------- 큐 계산 ---------- */
 function dueIds(){
-  const t=todayStr();
-  return Object.keys(prog).filter(id=>prog[id].b>=1&&prog[id].b<=4&&prog[id].n<=t).map(Number);
+  // 예정일(n)과 무관하게 아직 외우지 못한(1~4단계) 단어는 항상 오늘의 복습에 표기
+  return Object.keys(prog).filter(id=>prog[id].b>=1&&prog[id].b<=4).map(Number);
 }
 function newIds(limit){
   const learned=new Set(Object.keys(prog).map(Number));
@@ -439,7 +476,31 @@ function renderHome(){
   document.getElementById('progText').textContent=`${learned} / ${WORDS.length}`;
   document.getElementById('progBar').style.width=(learned/WORDS.length*100)+'%';
   document.getElementById('streakBadge').textContent='🔥 '+streak()+'일';
+  renderHistory();
 }
+function renderHistory(){
+  const days=['일','월','화','수','목','금','토'];
+  const body=document.getElementById('historyBody');
+  body.innerHTML='';
+  let any=false;
+  for(let i=1;i<=7;i++){
+    const dt=new Date();dt.setDate(dt.getDate()-i);
+    const k=dt.toISOString().slice(0,10);
+    const ids=[...new Set(logWords[k]||[])];
+    if(!ids.length)continue;
+    any=true;
+    const item=document.createElement('div');item.className='hitem';
+    const head=document.createElement('button');head.className='hitem-head';
+    head.innerHTML=`<span class="d">${dt.getMonth()+1}월 ${dt.getDate()}일 (${days[dt.getDay()]})</span><span class="n">${ids.length}개</span>`;
+    head.onclick=()=>item.classList.toggle('open');
+    const wordsBox=document.createElement('div');wordsBox.className='hitem-words';
+    wordsBox.innerHTML=ids.map(id=>{const w=WORDS[id];return w?`<span class="hword"><span class="jp">${w.w}</span><span class="m">${w.m}</span></span>`:''}).join('');
+    item.appendChild(head);item.appendChild(wordsBox);
+    body.appendChild(item);
+  }
+  document.getElementById('historySec').style.display=any?'block':'none';
+}
+document.getElementById('historyToggle').onclick=()=>document.getElementById('historySec').classList.toggle('open');
 
 /* ---------- 학습 세션 ---------- */
 let queue=[],qi=0,mode='new',total=0,wrongSet=new Set();
@@ -511,7 +572,9 @@ function answer(ok){
       queue.push(id); // 못 외운 카드는 세션 끝에 다시
     }
     p.u=Date.now();prog[id]=p;
-    log[todayStr()]=(log[todayStr()]||0)+1;
+    const t=todayStr();
+    log[t]=(log[t]||0)+1;
+    (logWords[t]=logWords[t]||[]).push(id);
     saveAll();
   }
   qi++;
@@ -635,7 +698,8 @@ function fbInit(){
         });
         Object.keys(remote.log||{}).forEach(d=>{log[d]=Math.max(log[d]||0,remote.log[d])});
         Object.keys(remote.taps||{}).forEach(c=>{taps[c]=Math.max(taps[c]||0,remote.taps[c])});
-        store.set('jpv_progress',prog);store.set('jpv_log',log);store.set('jpv_taps',taps);
+        Object.keys(remote.logWords||{}).forEach(d=>{logWords[d]=[...new Set([...(logWords[d]||[]),...remote.logWords[d]])]});
+        store.set('jpv_progress',prog);store.set('jpv_log',log);store.set('jpv_taps',taps);store.set('jpv_log_words',logWords);
         renderHome();
       }
     });
@@ -646,7 +710,7 @@ let pushTimer=null;
 function fbPush(){
   if(!db)return;
   clearTimeout(pushTimer);
-  pushTimer=setTimeout(()=>db.ref('nihongo/progress').set({prog,log,taps,updatedAt:Date.now()}),1200);
+  pushTimer=setTimeout(()=>db.ref('nihongo/progress').set({prog,log,taps,logWords,updatedAt:Date.now()}),1200);
 }
 
 /* ---------- 시작 ---------- */
