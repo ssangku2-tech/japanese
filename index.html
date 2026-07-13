@@ -74,6 +74,11 @@ header h1 span{color:var(--vermilion)}
 .bigbtn.new{background:var(--indigo);color:#fff}
 .bigbtn.rev{background:var(--vermilion);color:#fff}
 .bigbtn:disabled{background:var(--chip);color:var(--sub)}
+.newextra{
+  display:none;width:100%;margin-top:10px;background:var(--card);border:1px dashed var(--indigo);
+  border-radius:var(--r);padding:12px;font-family:inherit;font-size:13px;font-weight:700;
+  color:var(--indigo);cursor:pointer;
+}
 .rowbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .rowbtn{
   background:var(--card);border:1px solid var(--line);border-radius:var(--r);
@@ -262,6 +267,7 @@ nav button.on{color:var(--indigo);font-weight:700}
         <span class="t">오늘의 복습</span>
       </button>
     </div>
+    <button class="newextra" id="btnNewExtra" style="display:none"></button>
     <div class="rowbtns">
       <button class="rowbtn" id="btnQuiz">🎯 뜻 맞히기 퀴즈</button>
       <button class="rowbtn" id="btnShuffle">🔀 배운 단어 훑어보기</button>
@@ -376,7 +382,8 @@ let prog=store.get('jpv_progress',{});     // {id:{b:box,n:'YYYY-MM-DD',u:ts}}
 let taps=store.get('jpv_taps',{});          // {글자:횟수}
 let log=store.get('jpv_log',{});            // {날짜:학습수}
 let logWords=store.get('jpv_log_words',{}); // {날짜:[id,...]} 그날 학습한 단어(신규+복습)
-function saveAll(){store.set('jpv_progress',prog);store.set('jpv_taps',taps);store.set('jpv_log',log);store.set('jpv_log_words',logWords);fbPush();}
+let newLog=store.get('jpv_new_log',{});     // {날짜:[id,...]} 그날 "새 단어 배우기"로 처음 배운 단어(하루 10개 제한 집계용)
+function saveAll(){store.set('jpv_progress',prog);store.set('jpv_taps',taps);store.set('jpv_log',log);store.set('jpv_log_words',logWords);store.set('jpv_new_log',newLog);fbPush();}
 
 const todayStr=()=>new Date().toISOString().slice(0,10);
 function addDays(n){const d=new Date();d.setDate(d.getDate()+n);return d.toISOString().slice(0,10)}
@@ -441,6 +448,7 @@ function newIds(limit){
   }
   return out;
 }
+function newTodayCount(){return new Set(newLog[todayStr()]||[]).size}
 
 /* ---------- 화면 전환 ---------- */
 const scrs=['home','study','done','quiz','list','stats'];
@@ -467,11 +475,17 @@ function renderHome(){
   const days=['일','월','화','수','목','금','토'];const d=new Date();
   document.getElementById('todayDate').textContent=`${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
   const due=dueIds().length;
-  const fresh=newIds(NEW_PER_DAY).length;
+  const unlearnedTotal=WORDS.length-Object.keys(prog).length;
+  const capLeft=Math.max(0,NEW_PER_DAY-newTodayCount());
+  const fresh=Math.min(capLeft,unlearnedTotal);
   document.getElementById('newCount').textContent=fresh;
   document.getElementById('revCount').textContent=due;
   document.getElementById('btnNew').disabled=fresh===0;
   document.getElementById('btnRev').disabled=due===0;
+  const extraBtn=document.getElementById('btnNewExtra');
+  const showExtra=capLeft===0&&unlearnedTotal>0;
+  extraBtn.style.display=showExtra?'block':'none';
+  if(showExtra)extraBtn.textContent=`➕ 새 단어 ${Math.min(NEW_PER_DAY,unlearnedTotal)}개 더 배우기`;
   const learned=Object.keys(prog).length;
   document.getElementById('progText').textContent=`${learned} / ${WORDS.length}`;
   document.getElementById('progBar').style.width=(learned/WORDS.length*100)+'%';
@@ -510,7 +524,8 @@ function startSession(ids,m){
   document.getElementById('sessTitle').textContent=m==='new'?'새 단어':m==='rev'?'오늘의 복습':'훑어보기';
   show('study');renderCard();
 }
-document.getElementById('btnNew').onclick=()=>startSession(newIds(NEW_PER_DAY),'new');
+document.getElementById('btnNew').onclick=()=>startSession(newIds(Math.max(0,NEW_PER_DAY-newTodayCount())),'new');
+document.getElementById('btnNewExtra').onclick=()=>startSession(newIds(NEW_PER_DAY),'new');
 document.getElementById('btnRev').onclick=()=>startSession(dueIds(),'rev');
 document.getElementById('btnShuffle').onclick=()=>{
   const learned=Object.keys(prog).map(Number);
@@ -575,6 +590,7 @@ function answer(ok){
     const t=todayStr();
     log[t]=(log[t]||0)+1;
     (logWords[t]=logWords[t]||[]).push(id);
+    if(mode==='new'){(newLog[t]=newLog[t]||[]);if(!newLog[t].includes(id))newLog[t].push(id);}
     saveAll();
   }
   qi++;
@@ -601,7 +617,7 @@ if('speechSynthesis'in window){pickVoice();speechSynthesis.onvoiceschanged=pickV
 function speak(w){
   if(!('speechSynthesis'in window))return;
   speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(w.r?w.w:w.w);
+  const u=new SpeechSynthesisUtterance(w.r||w.w);
   u.lang='ja-JP';if(jpVoice)u.voice=jpVoice;u.rate=.85;
   speechSynthesis.speak(u);
 }
