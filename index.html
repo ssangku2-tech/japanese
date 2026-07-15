@@ -84,6 +84,7 @@ header h1 span{color:var(--vermilion)}
   background:var(--card);border:1px solid var(--line);border-radius:var(--r);
   padding:14px;font-family:inherit;font-size:14px;font-weight:700;color:var(--ink);cursor:pointer;
 }
+.rowbtn.wide{width:100%;margin-top:10px;text-align:center}
 .progressline{margin-top:14px;font-size:12px;color:var(--sub)}
 .bar{height:8px;background:var(--chip);border-radius:4px;margin-top:6px;overflow:hidden}
 .bar i{display:block;height:100%;background:var(--moss);border-radius:4px;transition:width .4s}
@@ -272,6 +273,7 @@ nav button.on{color:var(--indigo);font-weight:700}
       <button class="rowbtn" id="btnQuiz">🎯 뜻 맞히기 퀴즈</button>
       <button class="rowbtn" id="btnShuffle">🔀 배운 단어 훑어보기</button>
     </div>
+    <button class="rowbtn wide" id="btnMastered">✅ 외운 단어 <span id="masteredCount">0</span>개</button>
     <div class="progressline">
       전체 진도 <span id="progText">0 / 0</span>
       <div class="bar"><i id="progBar" style="width:0%"></i></div>
@@ -490,6 +492,7 @@ function renderHome(){
   document.getElementById('progText').textContent=`${learned} / ${WORDS.length}`;
   document.getElementById('progBar').style.width=(learned/WORDS.length*100)+'%';
   document.getElementById('streakBadge').textContent='🔥 '+streak()+'일';
+  document.getElementById('masteredCount').textContent=Object.values(prog).filter(p=>p.b>=5).length;
   renderHistory();
 }
 function renderHistory(){
@@ -532,6 +535,7 @@ document.getElementById('btnShuffle').onclick=()=>{
   if(!learned.length){alert('아직 배운 단어가 없습니다. 새 단어부터 시작해보세요!');return}
   startSession(learned.sort(()=>Math.random()-.5).slice(0,15),'browse');
 };
+document.getElementById('btnMastered').onclick=()=>{filter='완료';show('list')};
 
 function renderCard(){
   const id=queue[qi];const w=WORDS[id];
