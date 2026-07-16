@@ -451,6 +451,7 @@ function newIds(limit){
   return out;
 }
 function newTodayCount(){return new Set(newLog[todayStr()]||[]).size}
+function todayNewIds(){return [...new Set(newLog[todayStr()]||[])]}
 
 /* ---------- 화면 전환 ---------- */
 const scrs=['home','study','done','quiz','list','stats'];
@@ -479,7 +480,7 @@ function renderHome(){
   const due=dueIds().length;
   const unlearnedTotal=WORDS.length-Object.keys(prog).length;
   const capLeft=Math.max(0,NEW_PER_DAY-newTodayCount());
-  const fresh=Math.min(capLeft,unlearnedTotal);
+  const fresh=capLeft>0?Math.min(capLeft,unlearnedTotal):todayNewIds().length;
   document.getElementById('newCount').textContent=fresh;
   document.getElementById('revCount').textContent=due;
   document.getElementById('btnNew').disabled=fresh===0;
@@ -527,7 +528,10 @@ function startSession(ids,m){
   document.getElementById('sessTitle').textContent=m==='new'?'새 단어':m==='rev'?'오늘의 복습':'훑어보기';
   show('study');renderCard();
 }
-document.getElementById('btnNew').onclick=()=>startSession(newIds(Math.max(0,NEW_PER_DAY-newTodayCount())),'new');
+document.getElementById('btnNew').onclick=()=>{
+  const capLeft=Math.max(0,NEW_PER_DAY-newTodayCount());
+  startSession(capLeft>0?newIds(capLeft):todayNewIds(),'new');
+};
 document.getElementById('btnNewExtra').onclick=()=>startSession(newIds(NEW_PER_DAY),'new');
 document.getElementById('btnRev').onclick=()=>startSession(dueIds(),'rev');
 document.getElementById('btnShuffle').onclick=()=>{
@@ -570,13 +574,13 @@ function flip(){
   document.getElementById('card').classList.add('open');
   document.getElementById('btnFlip').style.display='none';
   document.getElementById('judge').classList.add('on');
-  speak(WORDS[queue[qi]]);
+  speakTwice(WORDS[queue[qi]]);
 }
 document.getElementById('btnFlip').onclick=flip;
 document.getElementById('card').onclick=e=>{
   if(!document.getElementById('card').classList.contains('open')&&!e.target.closest('.chip'))flip();
 };
-document.getElementById('cTts').onclick=e=>{e.stopPropagation();speak(WORDS[queue[qi]])};
+document.getElementById('cTts').onclick=e=>{e.stopPropagation();speakTwice(WORDS[queue[qi]])};
 
 function answer(ok){
   const id=queue[qi];
@@ -624,6 +628,13 @@ function speak(w){
   const u=new SpeechSynthesisUtterance(w.r||w.w);
   u.lang='ja-JP';if(jpVoice)u.voice=jpVoice;u.rate=.85;
   speechSynthesis.speak(u);
+}
+function speakTwice(w){
+  if(!('speechSynthesis'in window))return;
+  speechSynthesis.cancel();
+  const mk=()=>{const u=new SpeechSynthesisUtterance(w.r||w.w);u.lang='ja-JP';if(jpVoice)u.voice=jpVoice;u.rate=.85;return u};
+  speechSynthesis.speak(mk());
+  speechSynthesis.speak(mk());
 }
 document.getElementById('navTts').onclick=()=>speak({w:'こんにちは'});
 
