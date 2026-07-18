@@ -432,8 +432,10 @@ function wordRomaji(kana){
 
 /* ---------- 큐 계산 ---------- */
 function dueIds(){
-  // 예정일(n)과 무관하게 아직 외우지 못한(1~4단계) 단어는 항상 오늘의 복습에 표기
-  return Object.keys(prog).filter(id=>prog[id].b>=1&&prog[id].b<=4).map(Number);
+  // 아직 외우지 못한(1~4단계) 단어 중 예정일(n)이 오늘까지인 것만 오늘의 복습에 표기
+  // (오늘 정답 처리되어 다음 복습일이 미래로 잡힌 '이미 외운' 단어는 제외)
+  const t=todayStr();
+  return Object.keys(prog).filter(id=>prog[id].b>=1&&prog[id].b<=4&&prog[id].n<=t).map(Number);
 }
 function newIds(limit){
   const learned=new Set(Object.keys(prog).map(Number));
