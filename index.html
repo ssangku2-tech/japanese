@@ -633,8 +633,9 @@ function speakTwice(w){
   if(!('speechSynthesis'in window))return;
   speechSynthesis.cancel();
   const mk=()=>{const u=new SpeechSynthesisUtterance(w.r||w.w);u.lang='ja-JP';if(jpVoice)u.voice=jpVoice;u.rate=.85;return u};
-  speechSynthesis.speak(mk());
-  speechSynthesis.speak(mk());
+  const u1=mk();
+  u1.onend=()=>setTimeout(()=>speechSynthesis.speak(mk()),600);
+  speechSynthesis.speak(u1);
 }
 document.getElementById('navTts').onclick=()=>speak({w:'こんにちは'});
 
