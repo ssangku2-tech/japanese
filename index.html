@@ -280,6 +280,7 @@ nav button.on{color:var(--indigo);font-weight:700}
     </div>
   </div>
   <div class="sync" id="syncState">로컬 저장 모드</div>
+  <div class="sync" id="appVersion"></div>
 </div>
 
 <!-- ===== 학습 카드 ===== -->
@@ -748,6 +749,12 @@ function fbPush(){
 /* ---------- 시작 ---------- */
 renderHome();
 fbInit();
+if('caches'in window){
+  caches.keys().then(ks=>{
+    const v=ks.find(k=>k.startsWith('nihongo-v'));
+    if(v)document.getElementById('appVersion').textContent=v.replace('nihongo-','');
+  });
+}
 </script>
 </body>
 </html>

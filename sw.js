@@ -1,6 +1,6 @@
 /* 하루、일본어 서비스워커 — 오프라인 캐시
    앱 파일 수정 후에는 아래 CACHE 버전 숫자를 올려야 갱신됩니다 */
-const CACHE='nihongo-v10';
+const CACHE='nihongo-v11';
 const ASSETS=['./','./index.html','./words.js','./manifest.json','./icon-192.png','./icon-512.png'];
 
 self.addEventListener('install',e=>{
