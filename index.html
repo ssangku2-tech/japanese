@@ -717,25 +717,31 @@ function fbInit(){
   if(typeof window.firebaseConfig==='undefined')return;
   const s1=document.createElement('script');s1.src='https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js';
   const s2=document.createElement('script');s2.src='https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js';
-  s1.onload=()=>document.head.appendChild(s2);
+  const s3=document.createElement('script');s3.src='https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js';
+  s1.onload=()=>document.head.appendChild(s3);
+  s3.onload=()=>document.head.appendChild(s2);
   s2.onload=()=>{
     firebase.initializeApp(window.firebaseConfig);
-    db=firebase.database();
-    document.getElementById('syncState').innerHTML='<b>●</b> Firebase 동기화 중';
-    db.ref('nihongo/progress').once('value').then(snap=>{
-      const remote=snap.val();
-      if(remote&&remote.prog){
-        // 단어별로 더 최근 기록을 채택
-        Object.keys(remote.prog).forEach(id=>{
-          if(!prog[id]||(remote.prog[id].u||0)>(prog[id].u||0))prog[id]=remote.prog[id];
-        });
-        Object.keys(remote.log||{}).forEach(d=>{log[d]=Math.max(log[d]||0,remote.log[d])});
-        Object.keys(remote.taps||{}).forEach(c=>{taps[c]=Math.max(taps[c]||0,remote.taps[c])});
-        Object.keys(remote.logWords||{}).forEach(d=>{logWords[d]=[...new Set([...(logWords[d]||[]),...remote.logWords[d]])]});
-        store.set('jpv_progress',prog);store.set('jpv_log',log);store.set('jpv_taps',taps);store.set('jpv_log_words',logWords);
-        renderHome();
-      }
-    });
+    // 익명 인증 — DB 보안 규칙을 "auth != null"로 잠그기 위한 전제조건.
+    // 로그인 전에는 db를 만들지 않는다 (미인증 상태로 규칙 통과 시도 자체를 방지).
+    firebase.auth().signInAnonymously().then(()=>{
+      db=firebase.database();
+      document.getElementById('syncState').innerHTML='<b>●</b> Firebase 동기화 중';
+      db.ref('nihongo/progress').once('value').then(snap=>{
+        const remote=snap.val();
+        if(remote&&remote.prog){
+          // 단어별로 더 최근 기록을 채택
+          Object.keys(remote.prog).forEach(id=>{
+            if(!prog[id]||(remote.prog[id].u||0)>(prog[id].u||0))prog[id]=remote.prog[id];
+          });
+          Object.keys(remote.log||{}).forEach(d=>{log[d]=Math.max(log[d]||0,remote.log[d])});
+          Object.keys(remote.taps||{}).forEach(c=>{taps[c]=Math.max(taps[c]||0,remote.taps[c])});
+          Object.keys(remote.logWords||{}).forEach(d=>{logWords[d]=[...new Set([...(logWords[d]||[]),...remote.logWords[d]])]});
+          store.set('jpv_progress',prog);store.set('jpv_log',log);store.set('jpv_taps',taps);store.set('jpv_log_words',logWords);
+          renderHome();
+        }
+      });
+    }).catch(e=>{ console.warn('Firebase 인증 실패 — 로컬 모드로 동작', e); });
   };
   document.head.appendChild(s1);
 }
