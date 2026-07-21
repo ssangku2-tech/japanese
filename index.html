@@ -587,7 +587,11 @@ function answer(ok){
   const id=queue[qi];
   if(mode!=='browse'){
     const p=prog[id]||{b:0,n:todayStr()};
-    if(ok){
+    if(mode==='rev'){
+      // 오늘의 복습: 외웠어요=바로 완료(박스5), 아직이에요=복습 유지
+      if(ok){p.b=5;p.n='9999-12-31';}
+      else{p.b=1;p.n=addDays(1);wrongSet.add(id);queue.push(id);}
+    }else if(ok){
       if(wrongSet.has(id)){p.b=1;p.n=addDays(1);} // 이번 세션에서 틀렸던 카드: 1단계 유지
       else{p.b=Math.min(p.b+1,5);p.n=p.b<=4?addDays(INTERVALS[p.b]):'9999-12-31';}
     }else{
